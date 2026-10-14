@@ -98,3 +98,4 @@ nav a.current { color: var(--brand); font-weight: 600; }
 .sub { margin: 32px 0 8px; font-size: 1.25rem; }
 #how .ai-grid { margin-bottom: 20px; }
 #now .checklist { max-width: 640px; }
+footer .disclaimer { font-size: .9rem; opacity: .85; max-width: 760px; }

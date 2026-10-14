@@ -95,3 +95,6 @@ nav a.current { color: var(--brand); font-weight: 600; }
 .goal { margin-top: 18px; border-left: 5px solid var(--accent); }
 .goal h3 { margin: 0 0 6px; color: var(--brand-dark); font-size: 1.15rem; }
 .goal p { margin: 0; color: var(--muted); }
+.sub { margin: 32px 0 8px; font-size: 1.25rem; }
+#how .ai-grid { margin-bottom: 20px; }
+#now .checklist { max-width: 640px; }

@@ -40,8 +40,8 @@
             <input id="a-name" name="fields[name]" autocomplete="name" required>
             <label for="a-email">Email</label>
             <input id="a-email" name="fields[email]" type="email" autocomplete="email" required>
-            <label for="a-phone">Phone (optional)</label>
-            <input id="a-phone" name="fields[phone]" type="tel" autocomplete="tel">
+            <label for="a-phone">Phone</label>
+            <input id="a-phone" name="fields[phone]" type="tel" autocomplete="tel" required>
             <label for="a-city">City and state</label>
             <input id="a-city" name="fields[city]" autocomplete="address-level2" required>
             <label for="a-li">LinkedIn or website (optional)</label>
@@ -84,8 +84,6 @@
             <h2>Logistics</h2>
             <label for="a-coi">Any potential conflicts of interest we should know about? For example, you work for a home health agency or a medical equipment supplier. Having one doesn't rule you out.</label>
             <textarea id="a-coi" name="fields[board_conflicts]"></textarea>
-            <label for="a-times">Best days and times for a 20 to 30 minute call</label>
-            <input id="a-times" name="fields[board_call_times]" required>
             <label for="a-other">Anything else you'd like us to know?</label>
             <textarea id="a-other" name="fields[board_other]"></textarea>
 
@@ -95,7 +93,7 @@
             <input type="hidden" name="anticsrf" value="true">
             <button class="btn" type="submit">Send my application</button>
             <p class="fine">Please don't include any patient information.</p>
-            <p class="thanks" role="status">Thank you! Please check your email and click the confirm link so your application reaches us. We'll be in touch soon to set up a call.</p>
+            <p class="thanks" role="status">Thank you! Please check your email and click the confirm link so your application reaches us. If it looks like a good fit, we'll send you a link to book a call with Tracy.</p>
           </form>
           <iframe name="ml-app-frame" title="form response" hidden></iframe>
       </div></div>

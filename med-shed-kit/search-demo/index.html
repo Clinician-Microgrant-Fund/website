@@ -1,0 +1,132 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>MedShed Search Demo</title>
+<style>
+:root{--bg:#f6f4ee;--card:#fff;--ink:#1f2a24;--muted:#5d6b63;--line:#dcd8cc;--green:#2f6b4f;--green-ink:#fff;--amber:#c98a2b;--amber-soft:#fbefdc;--warn:#9a5b00;--ok:#2f6b4f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141a17;--card:#1d2621;--ink:#e9efe9;--muted:#a3b2a9;--line:#33403a;--green:#5fae86;--green-ink:#0e1a14;--amber:#e3a94e;--amber-soft:#3a2e1a;--warn:#e3a94e;--ok:#7cc59f}}
+:root[data-theme="dark"]{--bg:#141a17;--card:#1d2621;--ink:#e9efe9;--muted:#a3b2a9;--line:#33403a;--green:#5fae86;--green-ink:#0e1a14;--amber:#e3a94e;--amber-soft:#3a2e1a;--warn:#e3a94e;--ok:#7cc59f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+.app{max-width:520px;margin:0 auto;padding:0 16px 64px}
+header{display:flex;align-items:center;gap:10px;padding:16px 0 8px}
+header h1{font-size:20px;margin:0}
+header .sub{font-size:13px;color:var(--muted)}
+.demo{background:var(--amber-soft);color:var(--warn);border-radius:10px;padding:8px 12px;font-size:13px;margin:4px 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+label{display:block;font-size:14px;color:var(--muted);margin:12px 0 4px}
+label:first-child{margin-top:0}
+input[type=search],input[type=number],select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+input[type=range]{width:100%;accent-color:var(--green)}
+.row{display:flex;gap:10px;align-items:end}.row>*{flex:1}
+button{font:inherit;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 14px;min-height:44px;cursor:pointer}
+.primary{background:var(--green);border-color:var(--green);color:var(--green-ink);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:4px 12px;font-size:14px;min-height:32px}
+.count{font-size:14px;color:var(--muted);margin:0 0 8px}
+.res{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.res:last-child{border-bottom:0}
+.ico{width:52px;height:52px;border-radius:10px;background:var(--amber-soft);display:flex;align-items:center;justify-content:center;flex:none;font-size:26px}
+.t{font-weight:600}
+.m{font-size:14px;color:var(--muted)}
+.fit{font-size:12px;border-radius:999px;padding:2px 8px;display:inline-block;margin-top:4px}
+.fit.yes{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.fit.no{background:var(--amber-soft);color:var(--warn)}
+.hold{margin-top:8px;width:auto}
+.held{color:var(--ok);font-weight:600;font-size:14px;margin-top:8px}
+.muted{color:var(--muted);font-size:14px}
+</style></head><body>
+<div class="app">
+  <header>
+    <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><circle cx="15" cy="15" r="9" fill="none" stroke="var(--green)" stroke-width="2.6"/><path d="m22 22 9 9" stroke="var(--amber)" stroke-width="3" stroke-linecap="round"/></svg>
+    <div><h1>MedShed Search</h1><div class="sub">Find donated equipment at MedSheds near you</div></div>
+  </header>
+  <div class="demo">Demo with made-up MedSheds and items. Never enter patient names or addresses.</div>
+
+  <div class="card">
+    <label for="q">What do you need?</label>
+    <input id="q" type="search" placeholder="e.g. walker with seat, shower chair" autocomplete="off">
+    <div class="chips" id="quick"></div>
+    <div class="row">
+      <div><label for="from">Search near</label><select id="from"></select></div>
+      <button id="loc" type="button" title="Use my location">📍 Me</button>
+    </div>
+    <label for="r">Within <strong id="rv">15</strong> miles</label>
+    <input id="r" type="range" min="5" max="40" step="5" value="15">
+    <label for="door">Doorway width, optional (inches)</label>
+    <input id="door" type="number" inputmode="decimal" placeholder="e.g. 24">
+    <p class="muted" style="margin:4px 0 0">Shows whether wheelchairs, walkers and benches fit through.</p>
+  </div>
+
+  <div class="card">
+    <p class="count" id="count"></p>
+    <div id="results"></div>
+  </div>
+  <p class="muted">Your location is used only on this phone to sort results. It is never saved or sent.</p>
+</div>
+<script>
+const TOWNS = {"Snohomish":[47.913,-122.098],"Everett":[47.979,-122.202],"Lake Stevens":[48.015,-122.064],"Monroe":[47.855,-121.971],"Marysville":[48.052,-122.177],"Arlington":[48.199,-122.125],"Granite Falls":[48.084,-121.968],"Mill Creek":[47.860,-122.204],"Lynnwood":[47.821,-122.315]};
+// Made-up sample closets near real towns
+const SHEDS = [
+ {name:"Sample MedShed — Snohomish area",town:"Snohomish",ll:[47.915,-122.093],hours:"Tue & Sat 10–2"},
+ {name:"Sample Church Closet — Monroe area",town:"Monroe",ll:[47.857,-121.975],hours:"Wed 9–12"},
+ {name:"Sample Senior Center Closet — Lake Stevens area",town:"Lake Stevens",ll:[48.017,-122.068],hours:"Mon–Fri 9–3"},
+ {name:"Sample Loan Closet — Arlington area",town:"Arlington",ll:[48.197,-122.128],hours:"Thu 1–5"},
+ {name:"Sample Community Closet — Everett area",town:"Everett",ll:[47.981,-122.207],hours:"Sat 9–1"}
+];
+const ITEMS = [
+ [0,"♿","Standard wheelchair, 18 in seat","wheelchair manual chair",{seat:18,width:25}],
+ [0,"♿","Narrow wheelchair, 16 in seat","wheelchair narrow chair",{seat:16,width:23}],
+ [0,"🦯","Rollator with seat, red","rollator walker with seat 4 wheel rolling walker",{width:24}],
+ [0,"🚿","Shower chair with back","shower chair bath seat shower stool",{}],
+ [0,"🛁","Tub transfer bench","tub transfer bench bath bench shower bench",{width:27}],
+ [1,"🦯","Two-wheel folding walker","walker front wheeled walker folding walker",{width:22}],
+ [1,"🚽","Bedside commode, 3-in-1","bedside commode toilet chair raised toilet seat",{}],
+ [1,"🩹","Wound dressings, about 3 boxes","wound dressings gauze 4x4 bandages supplies",{}],
+ [2,"🦯","Rollator, tall, 300 lb capacity","rollator walker with seat tall bariatric",{width:25}],
+ [2,"♿","Transport chair, lightweight","transport chair wheelchair travel chair",{seat:17,width:22}],
+ [2,"🦯","Quad cane","cane quad cane walking cane",{}],
+ [3,"♿","Wide wheelchair, 20 in seat","wheelchair wide bariatric",{seat:20,width:28}],
+ [3,"🚿","Shower chair, no back","shower chair bath seat shower stool",{}],
+ [3,"🩲","Incontinence briefs, size L","incontinence briefs diapers adult supplies",{}],
+ [4,"🦯","Rollator with seat, blue","rollator walker with seat rolling walker",{width:23.5}],
+ [4,"🛏️","Bed rail, assist handle","bed rail assist handle bed cane",{}],
+ [4,"🛁","Tub transfer bench, padded","tub transfer bench bath bench",{width:26}]
+];
+const $=id=>document.getElementById(id);
+let here = TOWNS["Snohomish"], held = new Set();
+$("from").innerHTML = Object.keys(TOWNS).map(t=>`<option>${t}</option>`).join("") + '<option value="__me" hidden>My location</option>';
+$("quick").innerHTML = ["walker with seat","wheelchair","shower chair","tub bench","commode"].map(q=>`<button class="chip" type="button">${q}</button>`).join("");
+$("quick").onclick = e=>{ if(e.target.matches(".chip")){ $("q").value=e.target.textContent; render(); } };
+function miles(a,b){const R=3958.8,r=Math.PI/180,dLa=(b[0]-a[0])*r,dLo=(b[1]-a[1])*r;const h=Math.sin(dLa/2)**2+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
+function matches(text,q){ const words=q.toLowerCase().split(/\s+/).filter(w=>w.length>1 && !["with","a","an","the","for"].includes(w)); return words.every(w=>text.includes(w) || text.includes(w.replace(/s$/,""))); }
+function render(){
+  const q=$("q").value.trim(), rad=+$("r").value, door=parseFloat($("door").value);
+  $("rv").textContent=rad;
+  let res = ITEMS.map(([s,ico,title,kw,meas])=>({shed:SHEDS[s],ico,title,kw:(title+" "+kw).toLowerCase(),meas,id:title+s}))
+    .map(i=>({...i,d:miles(here,i.shed.ll)}))
+    .filter(i=>i.d<=rad && (!q || matches(i.kw,q)))
+    .sort((a,b)=>a.d-b.d);
+  $("count").textContent = res.length ? `${res.length} item${res.length>1?"s":""} within ${rad} miles` : (q ? `Nothing matching "${q}" within ${rad} miles. Try a wider distance.` : `No items within ${rad} miles.`);
+  const R=$("results"); R.innerHTML="";
+  res.forEach(i=>{
+    const d=document.createElement("div"); d.className="res";
+    d.innerHTML=`<div class="ico"></div><div style="flex:1;min-width:0"><div class="t"></div><div class="m sh"></div><div class="m hr"></div><div class="fx"></div><div class="hb"></div></div>`;
+    d.querySelector(".ico").textContent=i.ico; d.querySelector(".t").textContent=i.title;
+    d.querySelector(".sh").textContent=`${i.shed.name} · ${i.d.toFixed(1)} mi`;
+    d.querySelector(".hr").textContent=`Open ${i.shed.hours}` + (i.meas.width?` · ${i.meas.width} in wide`:"");
+    if(door && i.meas.width){ const ok=i.meas.width<=door; const f=document.createElement("span"); f.className="fit "+(ok?"yes":"no"); f.textContent=ok?`Fits a ${door} in door`:`Too wide for a ${door} in door`; d.querySelector(".fx").appendChild(f); }
+    const hb=d.querySelector(".hb");
+    if(held.has(i.id)){ hb.innerHTML='<div class="held">✓ On hold for you for 3 days. The MedShed will see your name and agency only.</div>'; }
+    else { const b=document.createElement("button"); b.className="hold primary"; b.textContent="Put on hold"; b.onclick=()=>{held.add(i.id);render();}; hb.appendChild(b); }
+    R.appendChild(d);
+  });
+}
+$("from").onchange=()=>{ if($("from").value!=="__me"){ here=TOWNS[$("from").value]; render(); } };
+$("loc").onclick=()=>{
+  if(!navigator.geolocation){ alert("Location isn't available here. Pick a town instead."); return; }
+  navigator.geolocation.getCurrentPosition(p=>{ here=[p.coords.latitude,p.coords.longitude]; const o=$("from").querySelector('[value="__me"]'); o.hidden=false; $("from").value="__me"; render(); },
+    ()=>alert("Couldn't get your location. Pick a town instead."),{maximumAge:600000,timeout:10000});
+};
+["q","r","door"].forEach(id=>$(id).addEventListener("input",render));
+render();
+</script>
+</body></html>

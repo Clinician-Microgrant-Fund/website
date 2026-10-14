@@ -99,3 +99,13 @@ nav a.current { color: var(--brand); font-weight: 600; }
 #how .ai-grid { margin-bottom: 20px; }
 #now .checklist { max-width: 640px; }
 footer .disclaimer { font-size: .9rem; opacity: .85; max-width: 760px; }
+.app-card { max-width: 720px; margin: 0 auto; }
+.app-card h2 { font-size: 1.25rem; margin: 28px 0 4px; }
+.app-card h2:first-of-type { margin-top: 0; }
+form fieldset { border: 0; padding: 0; margin: 14px 0 0; }
+form legend { font-weight: 600; font-size: .95rem; margin-bottom: 6px; }
+form label.check { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; margin: 6px 0; }
+form label.check input { width: auto; margin-top: 4px; flex: none; }
+form .sub-label { font-weight: 400; }
+form label.consent { margin-top: 22px; }
+form select { width: 100%; font: inherit; font-size: 1rem; padding: 11px 12px; border: 1px solid #cfc8bc; border-radius: 10px; background: #fff; color: var(--ink); }

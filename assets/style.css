@@ -109,3 +109,6 @@ form label.check input { width: auto; margin-top: 4px; flex: none; }
 form .sub-label { font-weight: 400; }
 form label.consent { margin-top: 22px; }
 form select { width: 100%; font: inherit; font-size: 1rem; padding: 11px 12px; border: 1px solid #cfc8bc; border-radius: 10px; background: #fff; color: var(--ink); }
+#faq details { border-bottom: 1px solid rgba(0,0,0,.1); padding: 14px 0; }
+#faq summary { cursor: pointer; font-weight: 700; }
+#faq details p { margin: 10px 0 0; }

@@ -33,6 +33,7 @@ button{font:inherit;border-radius:12px;border:1px solid var(--line);background:v
 .hold{margin-top:8px;width:auto}
 .held{color:var(--ok);font-weight:600;font-size:14px;margin-top:8px}
 .muted{color:var(--muted);font-size:14px}
+.hidden{display:none!important}
 </style></head><body>
 <div class="app">
   <header>
@@ -41,7 +42,7 @@ button{font:inherit;border-radius:12px;border:1px solid var(--line);background:v
   </header>
   <div class="demo">Demo with made-up MedSheds and items. Never enter patient names or addresses.</div>
 
-  <div class="card">
+  <div class="card" id="searchCard">
     <label for="q">What do you need?</label>
     <input id="q" type="search" placeholder="e.g. walker with seat, shower chair" autocomplete="off">
     <div class="chips" id="quick"></div>
@@ -56,9 +57,21 @@ button{font:inherit;border-radius:12px;border:1px solid var(--line);background:v
     <p class="muted" style="margin:4px 0 0">Shows whether wheelchairs, walkers and benches fit through.</p>
   </div>
 
-  <div class="card">
+  <div class="card" id="resultsCard">
     <p class="count" id="count"></p>
     <div id="results"></div>
+  </div>
+  <div class="card hidden" id="confirm">
+    <p class="held" style="margin-top:0;font-size:18px">✓ It's on hold for you</p>
+    <p id="cText" style="margin:6px 0"></p>
+    <p class="muted" style="margin:0 0 14px">The MedShed sees only your name and agency, never patient details.</p>
+    <div class="row"><button id="again" class="primary" type="button">Find another item</button><button id="done" type="button">I'm done</button></div>
+  </div>
+  <div class="card hidden" id="summary">
+    <p style="font-weight:600;font-size:18px;margin:0 0 8px">Your holds</p>
+    <div id="sList"></div>
+    <p class="muted">You'll get a text reminder the day before a hold ends. (Demo: no texts are sent.)</p>
+    <button id="restart" class="primary" type="button">Start a new search</button>
   </div>
   <p class="muted">Your location is used only on this phone to sort results. It is never saved or sent.</p>
 </div>
@@ -92,7 +105,7 @@ const ITEMS = [
  [4,"🛁","Tub transfer bench, padded","tub transfer bench bath bench",{width:26}]
 ];
 const $=id=>document.getElementById(id);
-let here = TOWNS["Snohomish"], held = new Set();
+let here = TOWNS["Snohomish"], held = new Set(), holds = [];
 $("from").innerHTML = Object.keys(TOWNS).map(t=>`<option>${t}</option>`).join("") + '<option value="__me" hidden>My location</option>';
 $("quick").innerHTML = ["walker with seat","wheelchair","shower chair","tub bench","commode"].map(q=>`<button class="chip" type="button">${q}</button>`).join("");
 $("quick").onclick = e=>{ if(e.target.matches(".chip")){ $("q").value=e.target.textContent; render(); } };
@@ -116,10 +129,16 @@ function render(){
     if(door && i.meas.width){ const ok=i.meas.width<=door; const f=document.createElement("span"); f.className="fit "+(ok?"yes":"no"); f.textContent=ok?`Fits a ${door} in door`:`Too wide for a ${door} in door`; d.querySelector(".fx").appendChild(f); }
     const hb=d.querySelector(".hb");
     if(held.has(i.id)){ hb.innerHTML='<div class="held">✓ On hold for you for 3 days. The MedShed will see your name and agency only.</div>'; }
-    else { const b=document.createElement("button"); b.className="hold primary"; b.textContent="Put on hold"; b.onclick=()=>{held.add(i.id);render();}; hb.appendChild(b); }
+    else { const b=document.createElement("button"); b.className="hold primary"; b.textContent="Put on hold"; b.onclick=()=>placeHold(i); hb.appendChild(b); }
     R.appendChild(d);
   });
 }
+function view(v){ $("searchCard").classList.toggle("hidden",v!=="search"); $("resultsCard").classList.toggle("hidden",v!=="search"); $("confirm").classList.toggle("hidden",v!=="confirm"); $("summary").classList.toggle("hidden",v!=="summary"); window.scrollTo(0,0); }
+function until(){ const d=new Date(Date.now()+3*864e5); return d.toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"}); }
+function placeHold(i){ held.add(i.id); holds.push({title:i.title,shed:i.shed.name,hours:i.shed.hours,by:until()}); $("cText").textContent=`${i.title} at ${i.shed.name}. Pick it up by ${until()}. Open ${i.shed.hours}.`; view("confirm"); }
+$("again").onclick=()=>{ $("q").value=""; $("door").value=""; render(); view("search"); $("q").focus(); };
+$("done").onclick=()=>{ const L=$("sList"); L.innerHTML=""; holds.forEach(h=>{ const d=document.createElement("div"); d.className="res"; d.innerHTML='<div style="flex:1"><div class="t"></div><div class="m"></div></div>'; d.querySelector(".t").textContent=h.title; d.querySelector(".m").textContent=`${h.shed} · pick up by ${h.by} · open ${h.hours}`; L.appendChild(d); }); view("summary"); };
+$("restart").onclick=$("again").onclick;
 $("from").onchange=()=>{ if($("from").value!=="__me"){ here=TOWNS[$("from").value]; render(); } };
 $("loc").onclick=()=>{
   if(!navigator.geolocation){ alert("Location isn't available here. Pick a town instead."); return; }

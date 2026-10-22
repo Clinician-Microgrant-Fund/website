@@ -7,10 +7,10 @@
   --brand: #193f73;       /* navy: primary buttons, links */
   --brand-dark: #193f73;  /* navy: headings */
   --brand-hover: #112d55;
-  --euc: #4e7266;         /* dark eucalyptus: secondary buttons, supporting accents */
-  --euc-hover: #3d5c52;
+  --euc: #1d6f78;         /* deep teal: secondary buttons, icons (not text) */
+  --euc-hover: #155960;
   --accent: #e09166;      /* peach: small decorative accents only */
-  --soft: #dfebe3;        /* light eucalyptus: occasional sections */
+  --soft: #dfebe3;        /* light eucalyptus: alternating section background */
   --cream: #fdf9f3;
   --line: #e3ddd3;
   --radius: 14px;
@@ -40,7 +40,7 @@ nav a { margin-left: 18px; text-decoration: none; color: var(--muted); font-size
 nav a:hover { color: var(--brand); text-decoration: underline; }
 
 .hero { padding-top: 56px; padding-bottom: 64px; }
-.eyebrow { color: var(--euc); border-left: 4px solid var(--accent); padding-left: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: .85rem; margin: 0 0 10px; }
+.eyebrow { color: var(--brand); border-left: 4px solid var(--accent); padding-left: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: .85rem; margin: 0 0 10px; }
 h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.1; margin: 0 0 16px; color: var(--brand-dark); }
 .lede { font-size: 1.2rem; color: var(--muted); max-width: 640px; margin: 0 0 28px; }
 .btn {
@@ -51,13 +51,13 @@ h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.1; margin: 0 0 16px; 
 .btn:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .btn.secondary { background: var(--euc); }
 .btn.secondary:hover { background: var(--euc-hover); }
-.btn.ghost { background: #fff; color: var(--euc); border: 2px solid var(--euc); margin-left: 8px; }
+.btn.ghost { background: #fff; color: var(--brand); border: 2px solid var(--brand); margin-left: 8px; }
 .btn.ghost:hover { background: var(--soft); }
 
 section { padding: 56px 0; }
-section.alt { background: var(--cream); }
+section.alt { background: var(--soft); }
 section.alt.green { background: var(--soft); }
-section.alt.green .card { border-color: #c9dccf; }
+section.alt .card { border-color: #c9dccf; }
 h2 { font-size: 1.8rem; color: var(--brand-dark); margin: 0 0 18px; line-height: 1.2; }
 .story { max-width: 700px; }
 .story p { margin: 0 0 16px; }
@@ -124,4 +124,4 @@ form select { width: 100%; font: inherit; font-size: 1rem; padding: 11px 12px; b
 #faq details { border-bottom: 1px solid rgba(0,0,0,.1); padding: 14px 0; }
 #faq summary { cursor: pointer; font-weight: 700; }
 #faq details p { margin: 10px 0 0; }
-section.alt.green .card.goal { border-left-color: var(--accent); }
+section.alt .card.goal { border-left-color: var(--accent); }

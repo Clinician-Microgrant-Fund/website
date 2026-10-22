@@ -125,3 +125,7 @@ form select { width: 100%; font: inherit; font-size: 1rem; padding: 11px 12px; b
 #faq summary { cursor: pointer; font-weight: 700; }
 #faq details p { margin: 10px 0 0; }
 section.alt .card.goal { border-left-color: var(--accent); }
+
+/* Product logo on the MedShed Kit page */
+.product-mark { display: block; width: 150px; height: auto; margin: 0 0 18px; }
+@media (max-width: 600px) { .product-mark { width: 110px; } }
